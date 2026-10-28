@@ -1,19 +1,18 @@
 /* =========================================================
-   script.js — 사이트 전체 스크립트
+   script.js — 사이트 전체 스크립트 (모든 페이지 공통)
 
    1. 설정 (이메일)
    2. 작품 데이터        ★ 작품 추가/수정은 여기서
    3. 공통 (헤더 · 모바일 메뉴 · 스크롤 등장 · 연도)
-   4. 페이지 전환 (#home · #work · #lecture · #contact)
-   5. 작품 그리드 · 필터 · 영상 모달
-   6. 문의 폼
+   4. 갤러리(2D/3D · AI · KT) · 영상 모달
+   5. 문의 폼
    ========================================================= */
 
 
 /* =========================================================
    1. 설정
    ========================================================= */
-const EMAIL = "hello@example.com"; // ← 실제 이메일로 변경
+const EMAIL = "v3v@kakao.com"; // ← 실제 이메일로 변경
 const USE_MAILTO = true;           // 폼 서비스(Formspree 등)를 쓰려면 false + form action 지정
 
 
@@ -24,10 +23,11 @@ const USE_MAILTO = true;           // 폼 서비스(Formspree 등)를 쓰려면 
    title     : 작품명
    client    : 클라이언트 / 프로젝트 성격
    year      : 연도
-   category  : 필터 분류 — CATEGORIES 의 key 중 하나
+   section   : 어느 페이지(갤러리)에 보여줄지 — "2d3d" | "ai" | "kt"
+   category  : 작업 성격 라벨 (모달에 표시)
    thumb     : 썸네일 이미지 경로 (없으면 그라디언트로 표시)
                예) "assets/images/works/brand-film.jpg"
-   preview   : 카드에 마우스 올렸을 때 재생할 짧은 mp4 (선택)
+   preview   : 타일에 마우스 올렸을 때 재생할 짧은 mp4 (선택)
                예) "assets/videos/brand-film-loop.mp4"
    video     : 모달에서 재생할 영상
                - 유튜브: "https://www.youtube.com/embed/영상ID"
@@ -36,24 +36,26 @@ const USE_MAILTO = true;           // 폼 서비스(Formspree 등)를 쓰려면 
    role      : 담당 역할
    tools     : 사용 툴 (배열)
    desc      : 작품 설명
-   featured  : true 면 메인(Home)에 노출
+   featured  : true 면 Home 대표 작품에 노출
    color     : 썸네일 없을 때 그라디언트 색상 [시작, 끝]
    ========================================================= */
 const CATEGORIES = {
-  all: "전체",
   brand: "브랜드 필름",
   title: "타이틀 · 오프닝",
   "3d": "3D 모션",
   ui: "UI 모션",
   social: "소셜 콘텐츠",
+  ai: "AI 비주얼",
 };
 
 const WORKS = [
+  // ---------- 2D / 3D ----------
   {
     id: "brand-film-2026",
     title: "Brand Film — Rebirth",
     client: "가상의 브랜드 A",
     year: 2026,
+    section: "2d3d",
     category: "brand",
     thumb: "",
     preview: "",
@@ -69,6 +71,7 @@ const WORKS = [
     title: "Festival Opening Title",
     client: "가상의 영화제",
     year: 2026,
+    section: "2d3d",
     category: "title",
     thumb: "",
     preview: "",
@@ -84,6 +87,7 @@ const WORKS = [
     title: "Product 3D Visual",
     client: "가상의 테크 브랜드",
     year: 2025,
+    section: "2d3d",
     category: "3d",
     thumb: "",
     preview: "",
@@ -91,7 +95,7 @@ const WORKS = [
     role: "3D Modeling, Lighting, Animation",
     tools: ["Cinema 4D", "Octane", "After Effects"],
     desc: "신제품 런칭용 3D 프로덕트 비주얼. 재질과 빛의 표현에 집중했습니다.",
-    featured: true,
+    featured: false,
     color: ["#2b5cff", "#9db4ff"],
   },
   {
@@ -99,6 +103,7 @@ const WORKS = [
     title: "App UI Motion Guide",
     client: "가상의 핀테크 앱",
     year: 2025,
+    section: "2d3d",
     category: "ui",
     thumb: "",
     preview: "",
@@ -106,7 +111,7 @@ const WORKS = [
     role: "UI Motion, Prototyping",
     tools: ["After Effects", "Figma", "Lottie"],
     desc: "앱 전반의 인터랙션 모션 가이드와 Lottie 에셋 제작.",
-    featured: true,
+    featured: false,
     color: ["#13c296", "#a6f0da"],
   },
   {
@@ -114,6 +119,7 @@ const WORKS = [
     title: "Social Campaign Series",
     client: "가상의 패션 브랜드",
     year: 2025,
+    section: "2d3d",
     category: "social",
     thumb: "",
     preview: "",
@@ -129,6 +135,7 @@ const WORKS = [
     title: "Channel Ident Package",
     client: "가상의 방송 채널",
     year: 2024,
+    section: "2d3d",
     category: "title",
     thumb: "",
     preview: "",
@@ -138,6 +145,138 @@ const WORKS = [
     desc: "채널 아이덴티티 리뉴얼 — 아이덴트, 범퍼, 로워써드 패키지.",
     featured: false,
     color: ["#ffb800", "#ffe7a3"],
+  },
+
+  // ---------- AI ---------- (플레이스홀더 — 실제 작업으로 교체하세요)
+  {
+    id: "ai-title-reel",
+    title: "AI Title Concept Reel",
+    client: "가상의 미디어 스튜디오",
+    year: 2026,
+    section: "ai",
+    category: "ai",
+    thumb: "",
+    preview: "",
+    video: "",
+    role: "AI 비주얼 익스플로레이션, Motion Design",
+    tools: ["Midjourney", "Runway", "After Effects"],
+    desc: "생성형 AI로 러프 컨셉을 빠르게 탐색하고, 최종 모션은 직접 다듬어 완성한 타이틀 릴.",
+    featured: true,
+    color: ["#7c3aed", "#c4b5fd"],
+  },
+  {
+    id: "ai-product-render",
+    title: "AI-assisted Product Render",
+    client: "가상의 가전 브랜드",
+    year: 2025,
+    section: "ai",
+    category: "ai",
+    thumb: "",
+    preview: "",
+    video: "",
+    role: "AI 비주얼 개발, 3D 모션",
+    tools: ["Midjourney", "Cinema 4D"],
+    desc: "AI 이미지 생성으로 룩을 빠르게 확정한 뒤, 3D로 제품을 재구성한 비주얼 작업.",
+    featured: false,
+    color: ["#0ea5e9", "#a5f3fc"],
+  },
+  {
+    id: "ai-motion-loop",
+    title: "Generative Motion Loop Series",
+    client: "개인 작업",
+    year: 2025,
+    section: "ai",
+    category: "ai",
+    thumb: "",
+    preview: "",
+    video: "",
+    role: "AI 영상 생성, 큐레이션, 편집",
+    tools: ["Runway", "Premiere Pro"],
+    desc: "AI 영상 생성 모델로 만든 루프 비주얼을 소셜 콘텐츠용으로 큐레이션한 시리즈.",
+    featured: true,
+    color: ["#f43f5e", "#fecdd3"],
+  },
+  {
+    id: "ai-campaign-teaser",
+    title: "AI Campaign Teaser",
+    client: "가상의 뷰티 브랜드",
+    year: 2024,
+    section: "ai",
+    category: "ai",
+    thumb: "",
+    preview: "",
+    video: "",
+    role: "AI 비주얼, 합성",
+    tools: ["Runway", "After Effects"],
+    desc: "캠페인 티저용 AI 비주얼 익스플로레이션과 후반 합성.",
+    featured: false,
+    color: ["#f59e0b", "#fde68a"],
+  },
+
+  // ---------- KT ---------- (플레이스홀더 — 실제 작업으로 교체하세요)
+  {
+    id: "kt-visual-01",
+    title: "KT Project — Visual 01",
+    client: "가상의 프로젝트",
+    year: 2026,
+    section: "kt",
+    category: "brand",
+    thumb: "",
+    preview: "",
+    video: "",
+    role: "Motion Design",
+    tools: ["After Effects"],
+    desc: "KT 섹션 플레이스홀더 작업물입니다. 실제 작업으로 교체해 주세요.",
+    featured: true,
+    color: ["#111111", "#333333"],
+  },
+  {
+    id: "kt-visual-02",
+    title: "KT Project — Visual 02",
+    client: "가상의 프로젝트",
+    year: 2025,
+    section: "kt",
+    category: "title",
+    thumb: "",
+    preview: "",
+    video: "",
+    role: "Motion Design",
+    tools: ["After Effects"],
+    desc: "KT 섹션 플레이스홀더 작업물입니다. 실제 작업으로 교체해 주세요.",
+    featured: false,
+    color: ["#1f2937", "#4b5563"],
+  },
+  {
+    id: "kt-visual-03",
+    title: "KT Project — Visual 03",
+    client: "가상의 프로젝트",
+    year: 2025,
+    section: "kt",
+    category: "3d",
+    thumb: "",
+    preview: "",
+    video: "",
+    role: "3D Motion",
+    tools: ["Cinema 4D"],
+    desc: "KT 섹션 플레이스홀더 작업물입니다. 실제 작업으로 교체해 주세요.",
+    featured: true,
+    color: ["#334155", "#64748b"],
+  },
+  {
+    id: "kt-visual-04",
+    title: "KT Project — Visual 04",
+    client: "가상의 프로젝트",
+    year: 2024,
+    section: "kt",
+    category: "social",
+    thumb: "",
+    preview: "",
+    video: "",
+    role: "Motion Design",
+    tools: ["Premiere Pro"],
+    desc: "KT 섹션 플레이스홀더 작업물입니다. 실제 작업으로 교체해 주세요.",
+    featured: false,
+    color: ["#0f172a", "#334155"],
   },
 ];
 
@@ -149,15 +288,19 @@ const header = document.querySelector(".header");
 const menuBtn = document.querySelector(".menu-btn");
 
 // 스크롤 시 헤더 하단 라인
-const onScroll = () => header.classList.toggle("is-scrolled", window.scrollY > 8);
-onScroll();
-window.addEventListener("scroll", onScroll, { passive: true });
+if (header) {
+  const onScroll = () => header.classList.toggle("is-scrolled", window.scrollY > 8);
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+}
 
 // 모바일 메뉴 토글
-menuBtn.addEventListener("click", () => {
-  const open = document.body.classList.toggle("menu-open");
-  menuBtn.setAttribute("aria-expanded", open);
-});
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    const open = document.body.classList.toggle("menu-open");
+    menuBtn.setAttribute("aria-expanded", open);
+  });
+}
 
 // 푸터 연도 자동 표시
 document.querySelectorAll("[data-year]").forEach((el) => (el.textContent = new Date().getFullYear()));
@@ -182,98 +325,61 @@ function observeReveal(root = document) {
 
 
 /* =========================================================
-   4. 페이지 전환
-   <section class="page" id="work"> 처럼 id 가 곧 주소(#work)가 됩니다.
-   ========================================================= */
-const pages = document.querySelectorAll(".page");
-const navLinks = document.querySelectorAll(".nav a");
-
-function showPage() {
-  let target = document.getElementById(location.hash.slice(1));
-  if (!target || !target.classList.contains("page")) target = document.getElementById("home");
-  const id = target.id;
-
-  pages.forEach((p) => p.classList.toggle("is-active", p === target));
-  navLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === "#" + id));
-  document.body.classList.remove("menu-open");
-  window.scrollTo(0, 0);
-  document.title = (target.dataset.title ? target.dataset.title + " — " : "") + "NAME — Motion Designer";
-}
-
-window.addEventListener("hashchange", showPage);
-
-
-/* =========================================================
-   5. 작품 그리드 · 필터 · 영상 모달
-   <div class="work-grid" data-works></div>             → 전체 작품
-   <div class="work-grid" data-works="featured"></div>  → featured 만
-   <div class="filter" data-filter></div>               → 필터 버튼 자리
+   4. 갤러리(2D/3D · AI · KT · Home 대표 작품) · 영상 모달
+   <div class="gallery" data-gallery="2d3d"></div>   → 2D/3D 작품만
+   <div class="gallery" data-gallery="ai"></div>      → AI 작품만
+   <div class="gallery" data-gallery="kt"></div>      → KT 작품만
+   <div class="gallery" data-gallery="featured"></div> → featured 만 (Home)
    ========================================================= */
 const isExternal = (path) => /^(https?:)?\/\//.test(path);
 
 function placeholder(work) {
   const [a, b] = work.color || ["#222", "#666"];
-  return `<div class="work-card__placeholder" style="background:linear-gradient(135deg, ${a}, ${b})">${work.title}</div>`;
+  return `<div class="work-card__placeholder" style="background:linear-gradient(135deg, ${a}, ${b})"></div>`;
 }
 
-function thumbHTML(work) {
+function galleryMediaHTML(work) {
   return work.thumb ? `<img src="${work.thumb}" alt="${work.title}" loading="lazy">` : placeholder(work);
 }
 
-function renderGrid(grid) {
-  const list = grid.dataset.works === "featured" ? WORKS.filter((w) => w.featured) : WORKS;
+function renderGallery(grid) {
+  const key = grid.dataset.gallery;
+  const list = key === "featured" ? WORKS.filter((w) => w.featured) : WORKS.filter((w) => w.section === key);
+  if (!list.length) return;
+
+  // "세로 2단" — 아이템 개수의 절반(올림)만큼 컬럼을 만들어 항상 2행으로 배치합니다
+  const cols = Math.max(1, Math.ceil(list.length / 2));
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 
   grid.innerHTML = list
     .map(
       (w) => `
-      <article class="work-card reveal" data-id="${w.id}" data-category="${w.category}" tabindex="0" role="button" aria-label="${w.title} 영상 보기">
-        <div class="work-card__thumb">
-          ${thumbHTML(w)}
-          ${w.preview ? `<video src="${w.preview}" muted loop playsinline preload="none" style="opacity:0"></video>` : ""}
-          <span class="work-card__play" aria-hidden="true"></span>
+      <article class="gallery__item" data-id="${w.id}" tabindex="0" role="button" aria-label="${w.title} 영상 보기">
+        ${galleryMediaHTML(w)}
+        ${w.preview ? `<video src="${w.preview}" muted loop playsinline preload="none"></video>` : ""}
+        <div class="gallery__caption">
+          <p class="gallery__title">${w.title}</p>
+          <p class="gallery__year">${w.year}</p>
         </div>
-        <div class="work-card__info">
-          <h3 class="work-card__title">${w.title}</h3>
-          <span class="work-card__meta">${CATEGORIES[w.category] || ""} · ${w.year}</span>
-        </div>
-        <p class="work-card__client">${w.client}</p>
       </article>`
     )
     .join("");
 
-  // 마우스 오버 시 프리뷰 영상 재생
-  grid.querySelectorAll(".work-card").forEach((card) => {
-    const v = card.querySelector("video");
+  // 마우스 오버 시 프리뷰 영상 재생 (CSS가 페이드 인/아웃을 담당)
+  grid.querySelectorAll(".gallery__item").forEach((item) => {
+    const v = item.querySelector("video");
     if (!v) return;
-    card.addEventListener("mouseenter", () => { v.style.opacity = 1; v.play().catch(() => {}); });
-    card.addEventListener("mouseleave", () => { v.style.opacity = 0; v.pause(); v.currentTime = 0; });
+    item.addEventListener("mouseenter", () => v.play().catch(() => {}));
+    item.addEventListener("mouseleave", () => { v.pause(); v.currentTime = 0; });
   });
 
   grid.addEventListener("click", (e) => {
-    const card = e.target.closest(".work-card");
-    if (card) openModal(card.dataset.id);
+    const item = e.target.closest(".gallery__item");
+    if (item) openModal(item.dataset.id);
   });
   grid.addEventListener("keydown", (e) => {
-    const card = e.target.closest(".work-card");
-    if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openModal(card.dataset.id); }
-  });
-}
-
-function renderFilter(filterEl, grid) {
-  const used = new Set(WORKS.map((w) => w.category));
-  const keys = Object.keys(CATEGORIES).filter((k) => k === "all" || used.has(k));
-  filterEl.innerHTML = keys
-    .map((k, i) => `<button class="filter__btn${i === 0 ? " is-active" : ""}" data-key="${k}">${CATEGORIES[k]}</button>`)
-    .join("");
-
-  filterEl.addEventListener("click", (e) => {
-    const btn = e.target.closest(".filter__btn");
-    if (!btn) return;
-    filterEl.querySelectorAll(".filter__btn").forEach((b) => b.classList.toggle("is-active", b === btn));
-    const key = btn.dataset.key;
-    grid.querySelectorAll(".work-card").forEach((card) => {
-      card.classList.toggle("is-hidden", key !== "all" && card.dataset.category !== key);
-    });
+    const item = e.target.closest(".gallery__item");
+    if (item && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openModal(item.dataset.id); }
   });
 }
 
@@ -333,50 +439,48 @@ $m(".modal__close").addEventListener("click", closeModal);
 modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && modal.classList.contains("is-open")) closeModal(); });
 
-document.querySelectorAll("[data-works]").forEach((grid) => {
-  renderGrid(grid);
-  const filterEl = grid.parentElement.querySelector("[data-filter]");
-  if (filterEl) renderFilter(filterEl, grid);
-});
+document.querySelectorAll("[data-gallery]").forEach(renderGallery);
 
 
 /* =========================================================
-   6. 문의 폼
+   5. 문의 폼
    서버 없이 동작하도록 메일 앱을 열어 내용을 채워줍니다.
+   contact.html 에만 폼이 있으므로, 다른 페이지에서는 안전하게 건너뜁니다.
    ========================================================= */
 const form = document.querySelector("#contact-form");
 
-// data-contact-type="lecture" 버튼을 누르면 문의 유형 자동 선택
-document.querySelectorAll("[data-contact-type]").forEach((btn) =>
-  btn.addEventListener("click", () => {
-    const radio = form.querySelector(`input[name="type"][value="${btn.dataset.contactType}"]`);
+if (form) {
+  // 다른 페이지에서 "...문의하기" 버튼으로 넘어올 때 ?type=lecture 처럼 쿼리로
+  // 문의 유형을 넘기면, 해당 라디오를 자동으로 선택해 둡니다.
+  const presetType = new URLSearchParams(location.search).get("type");
+  if (presetType) {
+    const radio = form.querySelector(`input[name="type"][value="${presetType}"]`);
     if (radio) radio.checked = true;
-  })
-);
+  }
 
-form.addEventListener("submit", (e) => {
-  if (!USE_MAILTO) return; // form action 주소로 전송
+  form.addEventListener("submit", (e) => {
+    if (!USE_MAILTO) return; // form action 주소로 전송
 
-  e.preventDefault();
-  const data = new FormData(form);
-  const typeLabel = form.querySelector(`input[name="type"]:checked`)?.dataset.label || "";
+    e.preventDefault();
+    const data = new FormData(form);
+    const typeLabel = form.querySelector(`input[name="type"]:checked`)?.dataset.label || "";
 
-  const subject = `[${typeLabel}] ${data.get("name")}님의 문의`;
-  const body = [
-    `이름 / 회사: ${data.get("name")}`,
-    `이메일: ${data.get("email")}`,
-    `연락처: ${data.get("phone") || "-"}`,
-    `문의 유형: ${typeLabel}`,
-    `예산 / 일정: ${data.get("budget") || "-"}`,
-    "",
-    data.get("message"),
-  ].join("\n");
+    const subject = `[${typeLabel}] ${data.get("name")}님의 문의`;
+    const body = [
+      `이름 / 회사: ${data.get("name")}`,
+      `이메일: ${data.get("email")}`,
+      `연락처: ${data.get("phone") || "-"}`,
+      `문의 유형: ${typeLabel}`,
+      `예산 / 일정: ${data.get("budget") || "-"}`,
+      "",
+      data.get("message"),
+    ].join("\n");
 
-  location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  form.querySelector(".form__status").textContent = "메일 앱이 열렸어요. 내용을 확인하고 전송해 주세요.";
-});
+    location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    form.querySelector(".form__status").textContent = "메일 앱이 열렸어요. 내용을 확인하고 전송해 주세요.";
+  });
+}
 
 
 /* ---------- 시작 ---------- */
-showPage();
 observeReveal();
