@@ -1,15 +1,29 @@
 # Motion Designer Portfolio
 
-모션 디자이너 포트폴리오 웹사이트. Next.js(App Router) + 순수 CSS, 정적 export로 빌드합니다.
+모션 디자이너 포트폴리오 웹사이트. Next.js(App Router) + 순수 CSS.
+
+**동적(dynamic) 사이트입니다** — Contact 폼이 Server Action(`app/contact/actions.js`)으로
+서버에서 직접 요청을 처리하기 때문에, Node 서버가 계속 떠 있어야 합니다.
+그래서 정적 호스팅(GitHub Pages 등)이 아니라 **Vercel**처럼 Next.js 서버를
+실행해주는 곳에 배포해야 합니다. (정적 사이트로 되돌리려면 `next.config.mjs`에
+`output: "export"`를 다시 추가하면 되지만, 그러면 Server Action은 못 씁니다.)
 
 ## 실행
 
 ```bash
 npm install
 npm run dev      # http://localhost:3000, 저장하면 바로 반영(HMR)
-npm run build    # out/ 에 순수 정적 파일로 출력 (Node 서버 없이 어디든 배포 가능)
-npm run start    # build 없이 바로 next start로 로컬 확인하고 싶을 때
+npm run build    # .next/ 에 프로덕션용으로 빌드 (서버 실행 전 단계)
+npm run start    # build 결과를 실제 Node 서버로 띄움 (배포 환경과 동일하게 로컬 확인)
 ```
+
+## 배포 (Vercel)
+
+1. [vercel.com](https://vercel.com) 에서 이 GitHub 저장소(`alsgotn-creator/test`)를 Import
+2. 프레임워크는 Next.js로 자동 인식됨 — 설정 변경 없이 Deploy
+3. 이후 `main` 브랜치에 푸시할 때마다 자동으로 다시 배포됨
+4. 이메일 발송 등 비밀 키가 필요해지면 Vercel 프로젝트 설정의 Environment Variables에 추가
+   (로컬에서는 `.env.local` 파일 — `.gitignore`에 이미 `.env*`가 포함돼 있어 커밋되지 않음)
 
 ## 폴더 구조
 
@@ -23,16 +37,20 @@ motion-web/
 │   ├── works-ai/page.jsx   # AI 작품 갤러리     (/works-ai)
 │   ├── works-kt/page.jsx   # KT 작품 갤러리     (/works-kt)
 │   ├── lecture/page.jsx    # 출강 · 강의        (/lecture)
-│   └── contact/page.jsx    # 문의               (/contact)
+│   └── contact/
+│       ├── page.jsx        # 문의               (/contact)
+│       └── actions.js      # Contact 폼의 Server Action (서버에서 폼 데이터 처리)
 ├── components/
 │   ├── Header.jsx / Footer.jsx / FooterYear.jsx
-│   ├── Hero.jsx            # 히어로 + GSAP 스크롤 패럴랙스
+│   ├── Hero.jsx            # 히어로 영상 배경 + GSAP 인터랙티브 헤드라인
 │   ├── Gallery.jsx         # 풀블리드 갤러리 (세로 2단, 호버 회색/흑백, GSAP)
 │   ├── Modal.jsx           # 작품 상세 · 영상 모달
-│   ├── ContactForm.jsx     # 문의 폼 (mailto)
+│   ├── ToolIcons.jsx       # "이런 작업이 가능합니다" 툴 아이콘 행
+│   ├── ContactForm.jsx     # 문의 폼 — actions.js의 Server Action 호출
 │   └── RevealOnScroll.jsx  # 스크롤 등장 애니메이션(.reveal) 재동작
 └── data/
-    └── works.js            # ★ 작품 데이터는 여기서 관리
+    ├── works.js            # ★ 작품 데이터는 여기서 관리
+    └── tools.js            # ★ 툴 아이콘 목록은 여기서 관리
 ```
 
 ## 바꿔야 할 것

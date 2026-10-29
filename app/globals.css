@@ -119,6 +119,7 @@ main { padding-top: var(--header-h); }
   transition: background 0.3s var(--ease), color 0.3s var(--ease), transform 0.3s var(--ease);
 }
 .btn:hover { transform: translateY(-2px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
 .btn--primary { background: #fff; color: #000; }
 .btn--primary:hover { background: var(--c-accent); color: #fff; }
 .btn--line { border: 1px solid currentColor; }
@@ -619,6 +620,18 @@ body.is-locked { overflow: hidden; }
 .tool-chip:focus-visible .tool-chip__icon {
   opacity: 1;
   filter: brightness(0) invert(1);
+}
+/* 브랜드 배경색이 있는 정사각형 로고(badge)는 색을 그대로 살려 둥근 사각형 아이콘처럼 보여줍니다 */
+.tool-chip__icon--badge {
+  border-radius: 6px;
+  object-fit: cover;
+  filter: none;
+  opacity: 1;
+}
+.tool-chip:hover .tool-chip__icon--badge,
+.tool-chip:focus-visible .tool-chip__icon--badge {
+  filter: none;
+  opacity: 1;
 }
 .tool-chip--empty { border-style: dashed; }
 .tool-chip__icon--empty {

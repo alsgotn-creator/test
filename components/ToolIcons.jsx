@@ -52,7 +52,12 @@ export default function ToolIcons() {
           tabIndex={0}
         >
           {tool.icon ? (
-            <img className="tool-chip__icon" src={tool.icon} alt={tool.label} loading="lazy" />
+            <img
+              className={`tool-chip__icon${tool.style === "badge" ? " tool-chip__icon--badge" : ""}`}
+              src={tool.icon}
+              alt={tool.label}
+              loading="lazy"
+            />
           ) : (
             <span className="tool-chip__icon tool-chip__icon--empty" aria-hidden="true">
               +

@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 이전 정적 사이트처럼 `next build` 결과를 순수 정적 파일(out/)로 뽑아내,
-  // Node 서버 없이 어디서든(GitHub Pages, Netlify, S3 등) 그대로 올릴 수 있게 합니다.
-  // 나중에 서버 기능(API route 등)이 필요해지면 이 줄만 지우면 됩니다.
-  output: "export",
+  // output: "export" 를 뺐습니다 — 이제 정적 파일이 아니라 Node 서버(Vercel 등)에서
+  // 돌아가는 동적 사이트입니다. Server Action/Route Handler 같은 백엔드 기능을 쓰려면
+  // 이 설정이어야 합니다. 대신 더 이상 "아무 정적 호스팅에나 올리기"는 안 되고,
+  // Vercel처럼 Next.js 서버를 실행해주는 곳에 배포해야 합니다.
 };
 
 export default nextConfig;

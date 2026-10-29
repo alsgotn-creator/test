@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-const EMAIL = "v3v@kakao.com"; // ← 실제 이메일로 변경
-const USE_MAILTO = true; // 폼 서비스(Formspree 등)를 쓰려면 false + <form action="..."> 지정
+import { submitContactForm } from "@/app/contact/actions";
 
 export default function ContactForm() {
   const formRef = useRef(null);
   const [status, setStatus] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 다른 페이지에서 "...문의하기" 버튼으로 넘어올 때 ?type=lecture 처럼 쿼리로
   // 문의 유형을 넘기면, 해당 라디오를 자동으로 선택해 둡니다.
@@ -21,27 +20,29 @@ export default function ContactForm() {
     if (radio) radio.checked = true;
   }, []);
 
-  const handleSubmit = (e) => {
-    if (!USE_MAILTO) return; // form action 주소로 전송
-
+  // 폼 데이터를 서버(Server Action)로 보내서 실제로 서버가 받아 처리하게 합니다.
+  // 브라우저는 submitContactForm을 "호출"하는 것처럼 보이지만, 실제로는
+  // 네트워크 요청을 보내고 서버가 실행한 결과만 돌려받습니다.
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const form = formRef.current;
     const data = new FormData(form);
-    const typeLabel = form.querySelector(`input[name="type"]:checked`)?.dataset.label || "";
 
-    const subject = `[${typeLabel}] ${data.get("name")}님의 문의`;
-    const body = [
-      `이름 / 회사: ${data.get("name")}`,
-      `이메일: ${data.get("email")}`,
-      `연락처: ${data.get("phone") || "-"}`,
-      `문의 유형: ${typeLabel}`,
-      `예산 / 일정: ${data.get("budget") || "-"}`,
-      "",
-      data.get("message"),
-    ].join("\n");
-
-    window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    setStatus("메일 앱이 열렸어요. 내용을 확인하고 전송해 주세요.");
+    setIsSubmitting(true);
+    setStatus("전송 중...");
+    try {
+      const result = await submitContactForm(data);
+      if (result.ok) {
+        setStatus("문의가 접수됐습니다. 빠른 시일 내에 연락드릴게요.");
+        form.reset();
+      } else {
+        setStatus(result.error || "문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+      }
+    } catch {
+      setStatus("전송에 실패했어요. 네트워크 상태를 확인하고 다시 시도해주세요.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -109,8 +110,8 @@ export default function ContactForm() {
       </label>
 
       <div className="form__foot">
-        <button type="submit" className="btn btn--primary">
-          문의 보내기 <span className="arrow">→</span>
+        <button type="submit" className="btn btn--primary" disabled={isSubmitting}>
+          {isSubmitting ? "전송 중..." : "문의 보내기"} <span className="arrow">→</span>
         </button>
         <p className="form__status" role="status">
           {status}
