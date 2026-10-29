@@ -1,6 +1,6 @@
 /* =========================================================
-   모든 페이지 공통 스타일
-   (리셋 · 변수 · 헤더 · 푸터 · 버튼 · 공통 섹션)
+   app/globals.css — 전역 스타일 (리셋 · 변수 · 헤더 · 푸터 · 버튼 ·
+   공통 섹션 · 갤러리 · 모달 · 페이지별 섹션 전부 포함)
    ========================================================= */
 
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
@@ -278,7 +278,7 @@ main { padding-top: var(--header-h); }
    (작품 카드 · 필터 · 영상 모달)
    ========================================================= */
 
-/* ---------- 작품 그리드 ---------- */
+/* ---------- 작품 그리드 (현재는 Gallery 쪽만 사용하지만 호환용으로 유지) ---------- */
 .work-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -350,28 +350,6 @@ main { padding-top: var(--header-h); }
 .work-card__title { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
 .work-card__meta { font-size: 14px; color: var(--c-text-sub); white-space: nowrap; }
 .work-card__client { font-size: 14px; color: var(--c-text-sub); margin-top: 2px; }
-
-/* ---------- 필터 ---------- */
-.filter {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: clamp(32px, 5vw, 56px);
-}
-.filter__btn {
-  height: 40px;
-  padding: 0 18px;
-  border: 1px solid var(--c-line);
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--c-text-sub);
-  transition: all 0.25s var(--ease);
-}
-.filter__btn:hover { color: var(--c-text); border-color: var(--c-text); }
-.filter__btn.is-active { background: #fff; border-color: #fff; color: #000; }
-
-.work-card.is-hidden { display: none; }
 
 /* ---------- 영상 모달 ---------- */
 .modal {
@@ -455,7 +433,7 @@ body.is-locked { overflow: hidden; }
 
 
 /* =========================================================
-   메인 페이지 (index.html #home)
+   Home 페이지
    ========================================================= */
 
 /* ---------- 히어로 ---------- */
@@ -624,7 +602,7 @@ body.is-locked { overflow: hidden; }
 
 
 /* =========================================================
-   출강 · 강의 페이지 (index.html #lecture)
+   출강 · 강의 페이지
    ========================================================= */
 
 /* ---------- 강의 형태 ---------- */
@@ -759,7 +737,7 @@ body.is-locked { overflow: hidden; }
 
 
 /* =========================================================
-   문의 페이지 (index.html #contact)
+   문의 페이지
    ========================================================= */
 
 .contact {
@@ -832,7 +810,7 @@ body.is-locked { overflow: hidden; }
 
 
 /* =========================================================
-   페이지 진입 애니메이션 — 각 html 파일이 독립된 페이지입니다
+   페이지 진입 애니메이션 — Next.js 라우트 전환 시 body에 매번 붙습니다
    ========================================================= */
 body { animation: pageIn 0.5s var(--ease); }
 @keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
@@ -841,8 +819,7 @@ body { animation: pageIn 0.5s var(--ease); }
 
 /* =========================================================
    풀블리드 갤러리 (2D/3D · AI · KT 작품 페이지)
-   <div class="gallery" data-gallery="2d3d"></div>
-   컬럼 수는 "세로 2단"이 되도록 js에서 item 개수 기준으로 계산해 넣습니다.
+   컬럼 수는 "세로 2단"이 되도록 컴포넌트에서 item 개수 기준으로 계산해 넣습니다.
    ========================================================= */
 .gallery {
   display: grid;
@@ -884,7 +861,7 @@ body { animation: pageIn 0.5s var(--ease); }
 .gallery__item:hover::after { background: rgba(120, 120, 120, 0.55); }
 .gallery__item:hover img,
 .gallery__item:hover video { filter: grayscale(1); }
-/* 확대(scale) 호버는 js/motion.js(GSAP)가 담당합니다 — 여기서 transform을 건드리지 않습니다 */
+/* 확대(scale) 호버는 motion(GSAP)이 담당합니다 — 여기서 transform을 건드리지 않습니다 */
 
 .gallery__caption {
   position: absolute;
