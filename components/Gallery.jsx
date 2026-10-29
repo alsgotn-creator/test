@@ -22,7 +22,7 @@ function Placeholder({ work }) {
 
 /**
  * 풀블리드 갤러리 — galleryKey에 따라 WORKS를 필터링해서 보여줍니다.
- *   "2d3d" | "ai" | "kt" → 해당 section 작품만
+ *   "2d3d" | "ai" | "branding" → 해당 section 작품만
  *   "featured"           → featured:true 인 작품만 (Home 대표 작품)
  * "세로 2단" 레이아웃: 컬럼 수 = 아이템 개수 ÷ 2 (올림) → 항상 정확히 2행.
  */

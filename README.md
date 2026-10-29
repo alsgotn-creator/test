@@ -22,8 +22,13 @@ npm run start    # build 결과를 실제 Node 서버로 띄움 (배포 환경�
 1. [vercel.com](https://vercel.com) 에서 이 GitHub 저장소(`alsgotn-creator/test`)를 Import
 2. 프레임워크는 Next.js로 자동 인식됨 — 설정 변경 없이 Deploy
 3. 이후 `main` 브랜치에 푸시할 때마다 자동으로 다시 배포됨
-4. 이메일 발송 등 비밀 키가 필요해지면 Vercel 프로젝트 설정의 Environment Variables에 추가
-   (로컬에서는 `.env.local` 파일 — `.gitignore`에 이미 `.env*`가 포함돼 있어 커밋되지 않음)
+4. Contact 폼 메일 발송(Resend) — [resend.com](https://resend.com) 가입 후 API Keys에서 키 발급
+   - 로컬: 프로젝트 루트에 `.env.local` 파일을 만들고 `RESEND_API_KEY=발급받은키` 한 줄 추가
+     (`.gitignore`에 이미 `.env*`가 포함돼 있어 커밋되지 않음)
+   - 배포: Vercel 프로젝트 설정 → Environment Variables에 `RESEND_API_KEY` 추가 후 재배포
+   - 키가 없으면 메일은 보내지 않고 서버 로그에만 남습니다(로컬 테스트용 기본 동작) — `app/contact/actions.js`
+   - 발신 주소는 기본으로 Resend 테스트 주소(`onboarding@resend.dev`)를 씁니다. 실제 도메인에서
+     보내려면 Resend에서 도메인을 인증한 뒤 `app/contact/actions.js`의 `CONTACT_FROM`을 바꾸세요.
 
 ## 폴더 구조
 

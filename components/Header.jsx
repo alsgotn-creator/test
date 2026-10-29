@@ -5,12 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/works-2d3d", label: "2D·3D" },
-  { href: "/works-ai", label: "AI" },
-  { href: "/works-kt", label: "KT" },
-  { href: "/lecture", label: "Lecture" },
-  { href: "/contact", label: "Contact" },
+  { href: "/", label: "MAIN" },
+  { href: "/#work", label: "VIDEO" },
+  { href: "/lecture", label: "LECTURE" },
+  { href: "/contact", label: "CONTACT" },
 ];
 
 export default function Header() {
