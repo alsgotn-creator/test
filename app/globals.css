@@ -9,7 +9,7 @@
 
 /* ---------- 변수 ---------- */
 :root {
-  --c-bg: #000000;
+  --c-bg: #f5f5f5;
   --c-bg-soft: #141414;
   --c-text: #f5f5f5;
   --c-text-sub: #9a9a9a;
@@ -30,7 +30,8 @@
 
 /* ---------- 리셋 ---------- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+/* scroll-behavior는 Lenis(SmoothScroll)가 대신 담당 — 네이티브 smooth와 같이 쓰면 서로 싸웁니다 */
+html { -webkit-text-size-adjust: 100%; }
 body {
   font-family: var(--font);
   color: var(--c-text);
@@ -53,7 +54,9 @@ input, textarea, select { font: inherit; color: inherit; }
   margin: 0 auto;
   padding: 0 var(--gutter);
 }
-main { padding-top: var(--header-h); }
+/* 헤더는 fixed라 문서 흐름에서 빠지므로 콘텐츠를 별도로 밀지 않습니다. */
+main { padding-top: 0; }
+#work { scroll-margin-top: var(--header-h); }
 .section { padding: clamp(80px, 12vw, 160px) 0; }
 .section--soft { background: var(--c-bg-soft); }
 .section--dark { background: var(--c-dark); color: #fff; }
@@ -129,20 +132,32 @@ main { padding-top: var(--header-h); }
 .btn .arrow { transition: transform 0.3s var(--ease); }
 .btn:hover .arrow { transform: translateX(4px); }
 
-.link-arrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  border-bottom: 1px solid currentColor;
-  padding-bottom: 2px;
-}
+/* 전체보기 박스 3개 — 위 featured 갤러리의 3등분과 같은 폭(풀블리드)으로 정렬, 밑줄 아닌 박스 */
 .work-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px clamp(20px, 3vw, 40px);
-  margin-top: clamp(32px, 4vw, 48px);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--c-line);
 }
+.work-links__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: clamp(32px, 4vw, 56px) 20px;
+  background: var(--c-bg);
+  color: var(--c-dark);
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: clamp(15px, 1.3vw, 18px);
+  letter-spacing: -0.01em;
+  text-align: center;
+  transition: background 0.3s var(--ease), color 0.3s var(--ease);
+}
+.work-links__item:hover { background: var(--c-bg-soft); color: var(--c-accent); }
+.work-links__item .arrow { transition: transform 0.3s var(--ease); }
+.work-links__item:hover .arrow { transform: translateX(4px); }
+@media (max-width: 640px) { .work-links { grid-template-columns: 1fr; } }
 
 /* ---------- 헤더 ---------- */
 .header {
@@ -150,13 +165,11 @@ main { padding-top: var(--header-h); }
   inset: 0 0 auto 0;
   height: var(--header-h);
   z-index: 100;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: transparent;
   border-bottom: 1px solid transparent;
   transition: border-color 0.3s;
 }
-.header.is-scrolled { border-bottom-color: var(--c-line); }
+.header.is-scrolled { border-bottom-color: rgba(255, 255, 255, 0.12); }
 .header__inner {
   height: 100%;
   display: flex;
@@ -448,27 +461,14 @@ body.is-locked { overflow: hidden; }
   overflow: hidden;
   isolation: isolate;
 }
-/* 등장 애니메이션은 Hero.jsx(GSAP)가 담당 — 단어 단위로 stagger 등장 + 호버 인터랙션.
-   호버 시 scale/translateY가 잘리지 않도록 overflow는 hidden으로 두지 않습니다. */
-.hero__title .line { display: block; }
-.hero__title .word {
-  display: inline-block;
-  cursor: default;
-  will-change: transform;
-}
-.hero__title em.word { font-style: normal; color: var(--c-accent); }
-
 .hero__bottom {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: flex-end;
-  gap: 32px;
-  flex-wrap: wrap;
   margin-top: clamp(40px, 6vw, 72px);
   opacity: 0;
   animation: fadeIn 1s 0.6s var(--ease) forwards;
 }
-.hero__actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
 @keyframes fadeIn { to { opacity: 1; } }
 
@@ -527,28 +527,34 @@ body.is-locked { overflow: hidden; }
   overflow: hidden;
   padding: 22px 0;
   white-space: nowrap;
+  color: var(--c-dark);
 }
 .marquee__track {
   display: inline-flex;
+  align-items: center;
   gap: 48px;
   animation: marquee 30s linear infinite;
   font-size: clamp(20px, 2.4vw, 30px);
   font-weight: 700;
   letter-spacing: -0.02em;
 }
+.marquee__track span {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
 .marquee__track span::after { content: "✦"; margin-left: 48px; color: var(--c-accent); }
+.marquee__icon {
+  width: clamp(20px, 2vw, 28px);
+  height: clamp(20px, 2vw, 28px);
+  object-fit: contain;
+  flex-shrink: 0;
+}
+/* 단색(mono) 로고는 밝은 띠 위에서 원래의 어두운 색으로 표시합니다. */
+.marquee__icon--mono { filter: none; }
+.marquee__icon--badge { border-radius: 6px; }
 /* 좌→우로 흐르도록: -50%에서 시작해 0%로 이동 (콘텐츠가 2번 반복되어 있어 이음새 없이 반복됩니다) */
 @keyframes marquee { from { transform: translateX(-50%); } to { transform: translateX(0%); } }
-
-/* ---------- 소개 ---------- */
-.about {
-  display: grid;
-  grid-template-columns: 1fr 1.3fr;
-  gap: clamp(40px, 6vw, 96px);
-}
-.about__text p + p { margin-top: 20px; }
-.about__text { font-size: 17px; color: var(--c-text-sub); }
-.about__text strong { color: var(--c-text); font-weight: 600; }
 
 .stats {
   display: grid;
@@ -562,122 +568,169 @@ body.is-locked { overflow: hidden; }
 .stats__num sup { font-size: 0.5em; color: var(--c-accent); }
 .stats__label { margin-top: 10px; font-size: 14px; color: var(--c-text-sub); }
 
-/* ---------- 서비스 ---------- */
-.services { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid rgba(255,255,255,.15); }
-.service {
-  padding: 36px 28px 36px 0;
-  border-right: 1px solid rgba(255,255,255,.15);
+/* ---------- About→Services 커튼 트랜지션 ---------- */
+.about-curtain { position: relative; height: 480vh; }
+.about-curtain__pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
 }
-.service + .service { padding-left: 28px; }
-.service:last-child { border-right: 0; }
-.service__num { font-size: 13px; color: var(--c-accent); font-weight: 600; }
-.service__title { font-size: 20px; font-weight: 700; margin: 40px 0 12px; }
-.service__desc { font-size: 15px; color: rgba(255,255,255,.55); }
 
-/* ---------- 사용 툴 아이콘 ---------- */
-.tools__label {
-  margin-top: 56px;
-  padding-top: 40px;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+.about-curtain__field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  transform-origin: center top;
+  will-change: transform;
+}
+.about-curtain__bg { position: absolute; inset: 0; will-change: transform; }
+.about-curtain__bg-img { width: 100%; height: 100%; object-fit: cover; }
+.about-curtain__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.4) 0%, rgba(0,0,0,.45) 45%, rgba(0,0,0,.88) 100%);
+}
+.about-curtain__content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(28px, 4vw, 48px);
+  color: #fff;
+}
+.about-curtain__headline { color: #fff; }
+.mask-line { display: block; overflow: hidden; }
+.mask-line > * { display: inline-block; will-change: transform; }
+
+.about-curtain__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 5vw, 72px);
+  max-width: 900px;
+}
+.about-curtain__text { font-size: 17px; color: rgba(255,255,255,.72); }
+.about-curtain__text p + p { margin-top: 16px; }
+.about-curtain__stats {
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+  gap: 16px;
+  align-content: start;
+}
+.about-curtain__stats .stats__label { color: rgba(255,255,255,.55); }
+
+.about-curtain__curtain {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  pointer-events: none;
+}
+.about-curtain__tile {
+  flex: 1 0 0;
+  height: 100%;
+  background: var(--c-dark);
+  transform: scaleY(0);
+  transform-origin: bottom;
+}
+.about-curtain__tile:nth-child(3n+1) { background: var(--c-accent); }
+
+/* 커튼 중앙에 뜨는 큰 라벨 (About / Services) — 트랜지션과 함께 나타났다 사라짐 */
+.about-curtain__label {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  margin: 0;
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-size: clamp(64px, 13vw, 200px);
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
+  mix-blend-mode: difference;
+  will-change: transform, opacity;
 }
-.tools {
-  margin-top: 24px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.tool-chip {
+
+.about-curtain__services {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
-  gap: 10px;
-  height: 52px;
-  padding: 0 20px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 999px;
-  cursor: default;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  background: #fff;
+  color: #0d0d0d;
+  padding: clamp(48px, 6vw, 72px) 0;
+  overflow: auto;
 }
-.tool-chip:hover,
-.tool-chip:focus-visible {
-  border-color: var(--c-accent);
-  box-shadow: 0 0 24px rgba(255, 77, 28, 0.25);
-  outline: none;
-}
-.tool-chip__icon {
-  width: 22px;
-  height: 22px;
-  /* 심플아이콘(검정 1색 로고)을 다크 테마에 맞게 옅은 회색으로, 호버 시 또렷한 흰색으로 */
-  filter: brightness(0) invert(0.85);
-  opacity: 0.6;
-  transition: opacity 0.3s, filter 0.3s;
-}
-.tool-chip:hover .tool-chip__icon,
-.tool-chip:focus-visible .tool-chip__icon {
-  opacity: 1;
-  filter: brightness(0) invert(1);
-}
-/* 브랜드 배경색이 있는 정사각형 로고(badge)는 색을 그대로 살려 둥근 사각형 아이콘처럼 보여줍니다 */
-.tool-chip__icon--badge {
-  border-radius: 6px;
-  object-fit: cover;
-  filter: none;
-  opacity: 1;
-}
-.tool-chip:hover .tool-chip__icon--badge,
-.tool-chip:focus-visible .tool-chip__icon--badge {
-  filter: none;
-  opacity: 1;
-}
-.tool-chip--empty { border-style: dashed; }
-.tool-chip__icon--empty {
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.35);
-  opacity: 1;
-}
-.tool-chip__label {
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.55);
-  transition: color 0.3s;
-  white-space: nowrap;
-}
-.tool-chip:hover .tool-chip__label,
-.tool-chip:focus-visible .tool-chip__label { color: #fff; }
 
-/* ---------- 강의 배너 / CTA ---------- */
-.banner {
+@media (max-width: 860px) {
+  .about-curtain__row { grid-template-columns: 1fr; }
+  .about-curtain { height: 540vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-curtain { height: auto; }
+  .about-curtain__pin { position: relative; height: auto; display: flex; flex-direction: column; }
+  .about-curtain__field { position: relative; opacity: 1 !important; transform: none !important; border-radius: 0 !important; height: 100vh; }
+  .about-curtain__services { position: relative; opacity: 1 !important; transform: none !important; }
+  .about-curtain__curtain, .about-curtain__label { display: none; }
+  .mask-line > *, .about-curtain__text, .about-curtain__stats, .section-head, .services {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ---------- 서비스 (01~04, 여백 없이 꽉 찬 2×2 사분면) ---------- */
+.services {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 40px;
+  grid-template-columns: repeat(2, 1fr);
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+}
+.service {
+  /* 뷰포트 높이 기준으로 제한 — 2행이 합쳐져도 핀 고정된 100vh 안에 항상 들어오도록 */
+  height: clamp(130px, 20vh, 220px);
+  padding: clamp(20px, 2.4vw, 32px);
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: background 0.3s var(--ease), color 0.3s var(--ease);
+}
+.service:hover { background: #0d0d0d; color: #fff; }
+.service:hover .service__num { color: var(--c-accent); }
+.service:hover .service__desc { color: rgba(255, 255, 255, 0.6); }
+.service__num { font-size: 13px; color: var(--c-accent); font-weight: 600; transition: color 0.3s var(--ease); }
+.service__title { font-size: clamp(22px, 2.6vw, 32px); font-weight: 700; }
+.service__desc { font-size: 15px; color: rgba(13, 13, 13, 0.55); transition: color 0.3s var(--ease); }
+
+/* 04 출강·강의 하위구조 — Lecture 안내 (2×2 그리드 아래, 04 카드와 이어지는 자리) */
+.service-lecture {
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  padding: clamp(40px, 6vw, 80px);
-  border-radius: calc(var(--radius) * 2);
-  background: var(--c-bg-soft);
+  gap: clamp(24px, 4vw, 48px);
+  margin-top: 36px;
+  padding-top: 36px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
 }
-.banner__actions { justify-self: end; display: flex; gap: 12px; flex-wrap: wrap; }
-.banner .lead { margin-top: 16px; }
+.service-lecture .lead { margin-top: 10px; color: rgba(13, 13, 13, 0.6); }
+.service-lecture .btn--primary { background: #0d0d0d; color: #fff; }
+.service-lecture .btn--primary:hover { background: var(--c-accent); color: #fff; }
 
-@media (max-width: 960px) {
-  .about { grid-template-columns: 1fr; }
-  .services { grid-template-columns: repeat(2, 1fr); }
-  .service:nth-child(2) { border-right: 0; }
-  .service:nth-child(3) { padding-left: 0; }
-  .service:nth-child(n+3) { border-top: 1px solid rgba(255,255,255,.15); }
-  .banner { grid-template-columns: 1fr; }
-  .banner__actions { justify-self: start; }
-}
 @media (max-width: 560px) {
-  .services { grid-template-columns: 1fr; }
-  .service, .service + .service { padding: 28px 0; border-right: 0; border-top: 1px solid rgba(255,255,255,.15); }
+  .services { grid-template-columns: 1fr; border-left: 0; }
+  .service { height: auto; border-right: 0; padding: 32px 0; }
+  .service-lecture { grid-template-columns: 1fr; align-items: start; }
   .stats { grid-template-columns: 1fr 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -969,3 +1022,4 @@ body { animation: pageIn 0.5s var(--ease); }
 @media (prefers-reduced-motion: reduce) {
   .gallery__item img, .gallery__item video, .gallery__item::after, .gallery__caption { transition: none; }
 }
+
