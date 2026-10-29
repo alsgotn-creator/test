@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Hero from "@/components/Hero";
 import Gallery from "@/components/Gallery";
+import ToolIcons from "@/components/ToolIcons";
 
 export default function HomePage() {
   return (
@@ -10,27 +11,23 @@ export default function HomePage() {
       {/* ===== 마키 ===== */}
       <div className="marquee" aria-hidden="true">
         <div className="marquee__track">
-          <span>2D / 3D</span>
           <span>AI</span>
-          <span>KT</span>
+          <span>2D</span>
+          <span>3D</span>
+          <span>Graphic</span>
           <span>Lecture</span>
-          <span>2D / 3D</span>
           <span>AI</span>
-          <span>KT</span>
+          <span>2D</span>
+          <span>3D</span>
+          <span>Graphic</span>
           <span>Lecture</span>
         </div>
       </div>
 
-      {/* ===== 대표 작품 ===== */}
-      <section className="section">
+      {/* ===== 대표 작품 (제목 없이, 좌우 꽉 차게) ===== */}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <Gallery galleryKey="featured" />
         <div className="container">
-          <div className="section-head reveal">
-            <div>
-              <p className="eyebrow">Selected Work</p>
-              <h2 className="title-lg">대표 작품</h2>
-            </div>
-          </div>
-          <Gallery galleryKey="featured" />
           <div className="work-links reveal">
             <Link href="/works-2d3d" className="link-arrow">
               2D·3D 전체 보기 →
@@ -99,7 +96,7 @@ export default function HomePage() {
           <div className="section-head reveal">
             <div>
               <p className="eyebrow">Services</p>
-              <h2 className="title-lg">할 수 있는 일</h2>
+              <h2 className="title-lg">이런 작업이 가능합니다</h2>
             </div>
           </div>
           <div className="services reveal">
@@ -124,6 +121,8 @@ export default function HomePage() {
               <p className="service__desc">기업 · 대학 · 교육기관 모션그래픽 교육</p>
             </div>
           </div>
+          <p className="tools__label reveal">Tools</p>
+          <ToolIcons />
         </div>
       </section>
 
