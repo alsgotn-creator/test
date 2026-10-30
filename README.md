@@ -29,6 +29,15 @@ npm run start    # build 결과를 실제 Node 서버로 띄움 (배포 환경�
    - 키가 없으면 메일은 보내지 않고 서버 로그에만 남습니다(로컬 테스트용 기본 동작) — `app/contact/actions.js`
    - 발신 주소는 기본으로 Resend 테스트 주소(`onboarding@resend.dev`)를 씁니다. 실제 도메인에서
      보내려면 Resend에서 도메인을 인증한 뒤 `app/contact/actions.js`의 `CONTACT_FROM`을 바꾸세요.
+5. 실시간 채팅(채널톡) — [channel.io](https://channel.io) 가입 → 워크스페이스 생성 →
+   설정(Settings) → 설치(Install) → 웹에서 "플러그인 키(Plugin Key)" 복사
+   - 로컬: `.env.local`에 `NEXT_PUBLIC_CHANNEL_TALK_PLUGIN_KEY=발급받은키` 한 줄 추가
+   - 배포: Vercel 프로젝트 설정 → Environment Variables에 `NEXT_PUBLIC_CHANNEL_TALK_PLUGIN_KEY` 추가 후 재배포
+     (`NEXT_PUBLIC_` 접두사가 붙은 값은 브라우저에 그대로 노출되는 값입니다 — 채널톡 플러그인 키는
+     원래 공개적으로 쓰이는 값이라 괜찮습니다)
+   - 키가 없으면 위젯이 그냥 로드되지 않습니다(콘솔에 경고만 남음) — `components/ChannelTalk.jsx`
+   - 설치 후 오른쪽 아래에 채팅 버튼이 뜨고, [데스크톱 앱/모바일 앱](https://channel.io/ko/download)으로
+     실시간 알림을 받아 바로 답장할 수 있습니다.
 
 ## 폴더 구조
 
@@ -47,6 +56,7 @@ motion-web/
 │       └── actions.js      # Contact 폼의 Server Action (서버에서 폼 데이터 처리)
 ├── components/
 │   ├── Header.jsx / Footer.jsx / FooterYear.jsx
+│   ├── ChannelTalk.jsx     # 실시간 채팅 위젯(채널톡) 로더 — layout.jsx에 사이트 전역으로 마운트
 │   ├── Hero.jsx            # 히어로 영상 배경 + GSAP 인터랙티브 헤드라인
 │   ├── Gallery.jsx         # 풀블리드 갤러리 (세로 2단, 호버 회색/흑백, GSAP)
 │   ├── Modal.jsx           # 작품 상세 · 영상 모달

@@ -9,10 +9,10 @@
 
 /* ---------- 변수 ---------- */
 :root {
-  --c-bg: #f5f5f5;
+  --c-bg: #ebebeb;
   --c-bg-soft: #141414;
-  --c-text: #f5f5f5;
-  --c-text-sub: #9a9a9a;
+  --c-text: #141414;
+  --c-text-sub: #8a8a8a;
   --c-line: #2a2a2a;
   --c-accent: #ff4d1c;       /* 포인트 컬러 — 원하는 색으로 바꾸세요 */
   --c-dark: #0d0d0d;
@@ -58,7 +58,8 @@ input, textarea, select { font: inherit; color: inherit; }
 main { padding-top: 0; }
 #work { scroll-margin-top: var(--header-h); }
 .section { padding: clamp(80px, 12vw, 160px) 0; }
-.section--soft { background: var(--c-bg-soft); }
+.section--soft { background: var(--c-bg-soft); color: #fff; }
+.section--soft .lead { color: rgba(255, 255, 255, 0.6); }
 .section--dark { background: var(--c-dark); color: #fff; }
 
 /* ---------- 타이포 ---------- */
@@ -169,7 +170,7 @@ main { padding-top: 0; }
   border-bottom: 1px solid transparent;
   transition: border-color 0.3s;
 }
-.header.is-scrolled { border-bottom-color: rgba(255, 255, 255, 0.12); }
+.header.is-scrolled { border-bottom-color: rgba(0, 0, 0, 0.1); }
 .header__inner {
   height: 100%;
   display: flex;
@@ -180,6 +181,8 @@ main { padding-top: 0; }
   font-size: 20px;
   font-weight: 800;
   letter-spacing: -0.03em;
+  color: var(--c-text);
+  transition: color 0.3s;
 }
 .logo span { color: var(--c-accent); }
 
@@ -200,6 +203,14 @@ main { padding-top: 0; }
   background: var(--c-accent);
 }
 
+/* 홈 히어로(어두운 영상) 위에 떠 있는 동안에만 밝은 글자색으로 전환 —
+   그 외(스크롤 후 / 다른 모든 페이지)는 밝은 배경 위라 기본(어두운 글자색)을 씁니다. */
+.header--on-dark .logo { color: #fff; }
+.header--on-dark .nav a { color: rgba(255, 255, 255, 0.65); }
+.header--on-dark .nav a:hover,
+.header--on-dark .nav a.is-active { color: #fff; }
+.header--on-dark .menu-btn span { background: #fff; }
+
 .menu-btn {
   display: none;
   width: 40px; height: 40px;
@@ -210,7 +221,7 @@ main { padding-top: 0; }
   left: 9px; right: 9px;
   height: 2px;
   background: var(--c-text);
-  transition: transform 0.3s var(--ease), top 0.3s var(--ease);
+  transition: transform 0.3s var(--ease), top 0.3s var(--ease), background 0.3s;
 }
 .menu-btn span:nth-child(1) { top: 15px; }
 .menu-btn span:nth-child(2) { top: 23px; }
@@ -569,13 +580,14 @@ body.is-locked { overflow: hidden; }
 .stats__label { margin-top: 10px; font-size: 14px; color: var(--c-text-sub); }
 
 /* ---------- About→Services 커튼 트랜지션 ---------- */
-.about-curtain { position: relative; height: 480vh; }
+.about-curtain { position: relative; height: 560vh; }
 .about-curtain__pin {
   position: sticky;
   top: 0;
   height: 100vh;
   overflow: hidden;
-  background: #000;
+  /* 단색이 아니라 은은한 그라디언트 — 트랜지션(ABOUT 라벨 ↔ 사진) 동안 밋밋해 보이지 않도록 */
+  background: radial-gradient(120% 130% at 50% 0%, #1c1c1c 0%, #0a0a0a 55%, #000 100%);
 }
 
 .about-curtain__field {
@@ -624,23 +636,7 @@ body.is-locked { overflow: hidden; }
 }
 .about-curtain__stats .stats__label { color: rgba(255,255,255,.55); }
 
-.about-curtain__curtain {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  display: flex;
-  pointer-events: none;
-}
-.about-curtain__tile {
-  flex: 1 0 0;
-  height: 100%;
-  background: var(--c-dark);
-  transform: scaleY(0);
-  transform-origin: bottom;
-}
-.about-curtain__tile:nth-child(3n+1) { background: var(--c-accent); }
-
-/* 커튼 중앙에 뜨는 큰 라벨 (About / Services) — 트랜지션과 함께 나타났다 사라짐 */
+/* 중앙에 뜨는 큰 라벨 (About / Services) — 디졸브로 천천히 나타났다 사라짐 */
 .about-curtain__label {
   position: absolute;
   inset: 0;
@@ -665,7 +661,8 @@ body.is-locked { overflow: hidden; }
   z-index: 1;
   display: flex;
   align-items: center;
-  background: #fff;
+  /* 단색이 아니라 은은한 그라디언트 — SERVICES 라벨이 걷힌 뒤에도 배경이 밋밋하지 않도록 */
+  background: linear-gradient(165deg, #f4f4f4 0%, #ebebeb 55%, #e2e2e2 100%);
   color: #0d0d0d;
   padding: clamp(48px, 6vw, 72px) 0;
   overflow: auto;
@@ -673,7 +670,7 @@ body.is-locked { overflow: hidden; }
 
 @media (max-width: 860px) {
   .about-curtain__row { grid-template-columns: 1fr; }
-  .about-curtain { height: 540vh; }
+  .about-curtain { height: 620vh; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -681,7 +678,7 @@ body.is-locked { overflow: hidden; }
   .about-curtain__pin { position: relative; height: auto; display: flex; flex-direction: column; }
   .about-curtain__field { position: relative; opacity: 1 !important; transform: none !important; border-radius: 0 !important; height: 100vh; }
   .about-curtain__services { position: relative; opacity: 1 !important; transform: none !important; }
-  .about-curtain__curtain, .about-curtain__label { display: none; }
+  .about-curtain__label { display: none; }
   .mask-line > *, .about-curtain__text, .about-curtain__stats, .section-head, .services {
     transform: none !important;
     opacity: 1 !important;
@@ -754,6 +751,7 @@ body.is-locked { overflow: hidden; }
   border: 1px solid var(--c-line);
   border-radius: var(--radius);
   background: var(--c-bg);
+  color: var(--c-dark);
   transition: border-color 0.3s, transform 0.4s var(--ease);
 }
 .format:hover { border-color: var(--c-text); transform: translateY(-4px); }

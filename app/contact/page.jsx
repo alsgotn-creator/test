@@ -23,7 +23,7 @@ export default function ContactPage() {
             <div className="contact-info__item">
               <p className="contact-info__label">Email</p>
               <p className="contact-info__value">
-                <a href="mailto:v3v@kakao.com">v3v@kakao.com</a>
+                <a href="mailto:alsgotn@naver.com">alsgotn@naver.com</a>
               </p>
             </div>
             <div className="contact-info__item">

@@ -15,7 +15,9 @@ import { Resend } from "resend";
    정상 처리된 것처럼 응답합니다 — 키 없이도 로컬에서 폼 자체는 테스트할 수 있게요.
    ========================================================= */
 
-const CONTACT_TO = "v3v@kakao.com";
+// Resend 도메인 인증 전(샌드박스 모드)엔 Resend 계정 소유자 이메일로만 발송이 허용됩니다.
+// 도메인을 인증하면 원하는 수신 주소(alsgotn@naver.com 등)로 바꿔도 됩니다.
+const CONTACT_TO = "alsgotn112@gmail.com";
 // 도메인 인증 전까지는 Resend의 테스트 발신 주소(onboarding@resend.dev)를 씁니다.
 // resend.com에서 본인 도메인을 인증하면 "Noitom <contact@내도메인.com>"처럼 바꾸세요.
 const CONTACT_FROM = "Noitom 문의 <onboarding@resend.dev>";
@@ -26,6 +28,92 @@ const TYPE_LABELS = {
   collab: "협업 제안",
   etc: "기타",
 };
+
+const ACCENT = "#ff4d1c";
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// 이메일 클라이언트 호환성 때문에 외부 CSS 없이 table + inline style로만 구성합니다.
+function buildEmailHtml(submission) {
+  const { type, name, email, phone, budget, message, receivedAt } = submission;
+  const row = (label, value, href) => `
+    <tr>
+      <td style="padding:14px 0;border-bottom:1px solid #eee;width:110px;vertical-align:top;color:#8a8a8a;font-size:13px;font-weight:600;letter-spacing:.02em;">${label}</td>
+      <td style="padding:14px 0;border-bottom:1px solid #eee;vertical-align:top;color:#141414;font-size:15px;font-weight:600;">${
+        href ? `<a href="${href}" style="color:#141414;text-decoration:none;">${escapeHtml(value)}</a>` : escapeHtml(value)
+      }</td>
+    </tr>`;
+
+  const formattedDate = new Date(receivedAt).toLocaleString("ko-KR", {
+    dateStyle: "long",
+    timeStyle: "short",
+    timeZone: "Asia/Seoul",
+  });
+
+  return `
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Noitom 문의</title>
+  </head>
+  <body style="margin:0;padding:0;background:#f2f2f2;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f2f2f2;padding:40px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden;">
+            <tr>
+              <td style="background:#0d0d0d;padding:36px 40px;">
+                <div style="font-size:20px;font-weight:800;letter-spacing:-.02em;color:#ffffff;">
+                  Noitom<span style="color:${ACCENT};">.</span>
+                </div>
+                <div style="margin-top:8px;font-size:14px;color:rgba(255,255,255,.55);">새로운 문의가 도착했습니다</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:36px 40px 8px;">
+                <span style="display:inline-block;background:${ACCENT};color:#ffffff;font-size:12px;font-weight:700;letter-spacing:.04em;padding:7px 14px;border-radius:999px;">${escapeHtml(
+                  type
+                )}</span>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;border-collapse:collapse;">
+                  ${row("이름 / 회사", name)}
+                  ${row("이메일", email, `mailto:${email}`)}
+                  ${row("연락처", phone)}
+                  ${row("예산 / 일정", budget)}
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 40px 36px;">
+                <div style="font-size:13px;font-weight:600;color:#8a8a8a;margin-bottom:10px;">내용</div>
+                <div style="background:#f6f6f6;border-radius:12px;padding:20px;font-size:15px;line-height:1.7;color:#141414;white-space:pre-wrap;">${escapeHtml(
+                  message
+                )}</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:20px 40px 32px;border-top:1px solid #eee;">
+                <div style="font-size:13px;color:#8a8a8a;">${formattedDate} · Noitom 포트폴리오 사이트에서 접수됨</div>
+                <div style="margin-top:6px;font-size:13px;color:#8a8a8a;">이 메일에 바로 답장하면 ${escapeHtml(
+                  email
+                )}로 전달됩니다.</div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+}
 
 export async function submitContactForm(formData) {
   const name = formData.get("name")?.toString().trim() || "";
@@ -64,6 +152,8 @@ export async function submitContactForm(formData) {
       to: CONTACT_TO,
       replyTo: email,
       subject: `[${submission.type}] ${name}님의 문의`,
+      html: buildEmailHtml(submission),
+      // html을 못 그리는 클라이언트를 위한 텍스트 버전
       text: [
         `문의 유형: ${submission.type}`,
         `이름/회사: ${name}`,

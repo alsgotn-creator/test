@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import SmoothScroll from "@/components/SmoothScroll";
+import ChannelTalk from "@/components/ChannelTalk";
 
 export const metadata = {
   title: {
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
         <Footer />
         <RevealOnScroll />
         <SmoothScroll />
+        <ChannelTalk />
       </body>
     </html>
   );

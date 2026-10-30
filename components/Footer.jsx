@@ -22,7 +22,7 @@ export default function Footer() {
           <p>
             © <FooterYear /> Noitom. All rights reserved.
           </p>
-          <p>v3v@kakao.com</p>
+          <p>alsgotn@naver.com</p>
         </div>
       </div>
     </footer>
