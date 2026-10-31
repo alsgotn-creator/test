@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { WORKS } from "@/data/works";
 import Modal from "./Modal";
+import WorkThumb from "./WorkThumb";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -35,6 +36,10 @@ export default function Gallery({ galleryKey }) {
       ? WORKS.filter((w) => w.featured)
       : WORKS.filter((w) => w.section === galleryKey);
   const cols = Math.max(1, Math.ceil(list.length / 2));
+
+  // 타일이 화면에서 차지하는 실제 폭 — next/image가 이 값으로 알맞은 크기를 골라
+  // 내려줍니다. 모바일(<=640px)에선 globals.css가 2단으로 강제하므로 50vw.
+  const thumbSizes = `(max-width: 640px) 50vw, ${Math.round(100 / cols)}vw`;
 
   // 스크롤로 들어오며 순서대로 떠오르는 애니메이션 (GSAP + ScrollTrigger)
   useEffect(() => {
@@ -106,11 +111,7 @@ export default function Gallery({ galleryKey }) {
               }
             }}
           >
-            {w.thumb ? (
-              <img src={w.thumb} alt={w.title} loading="lazy" />
-            ) : (
-              <Placeholder work={w} />
-            )}
+            {w.thumb ? <WorkThumb work={w} sizes={thumbSizes} /> : <Placeholder work={w} />}
             {w.preview ? <video src={w.preview} muted loop playsInline preload="none" /> : null}
             <div className="gallery__caption">
               <p className="gallery__title">{w.title}</p>

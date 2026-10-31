@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
+import WorkThumb from "./WorkThumb";
+
 const isExternal = (path) => /^(https?:)?\/\//.test(path);
 
 function Placeholder({ work }) {
@@ -17,7 +19,12 @@ function Placeholder({ work }) {
 function Media({ work }) {
   const src = work.video;
   if (!src) {
-    return work.thumb ? <img src={work.thumb} alt={work.title} /> : <Placeholder work={work} />;
+    return work.thumb ? (
+      // 모달 박스는 max-width:1100px, 그보다 좁은 화면에선 화면 폭 전체를 씁니다.
+      <WorkThumb work={work} sizes="(max-width: 1180px) 100vw, 1100px" />
+    ) : (
+      <Placeholder work={work} />
+    );
   }
   if (!isExternal(src) || /\.(mp4|webm|mov)$/i.test(src)) {
     return <video src={src} controls autoPlay playsInline />;

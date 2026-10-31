@@ -9,6 +9,15 @@
    category  : 작업 성격 라벨 (모달에 표시)
    thumb     : 썸네일 이미지 경로 (없으면 그라디언트로 표시)
                예) "/assets/images/works/brand-film.jpg"  (public/ 기준 절대경로)
+
+               ★ 갤러리 타일이 크고 세로로 길게 잘려 들어가므로 반드시 고해상도를 쓰세요.
+                 - 유튜브: https://i.ytimg.com/vi/영상ID/maxresdefault.jpg   (1280×720)
+                   → hqdefault.jpg는 480×360으로 너무 작아 뭉개집니다.
+                   → maxresdefault가 없는 SD 영상이면 components/WorkThumb.jsx가
+                     자동으로 hqdefault로 되돌리니, 일단 maxresdefault로 적으면 됩니다.
+                 - 비메오: 주소 끝의 크기를 _1280x720 으로 (최대 _1920x1080)
+                   → 영상 ID만 알 때는 https://vimeo.com/api/oembed.json?url=영상주소
+                     를 열어 thumbnail_url 을 확인하세요.
    preview   : 타일에 마우스 올렸을 때 재생할 짧은 mp4 (선택)
                예) "/assets/videos/brand-film-loop.mp4"
    video     : 모달에서 재생할 영상
@@ -31,7 +40,7 @@ export const WORKS = [
     year: 2025,
     section: "2d3d",
     category: "brand",
-    thumb: "https://i.ytimg.com/vi/OBKQ8QO0eSs/hqdefault.jpg",
+    thumb: "https://i.ytimg.com/vi/OBKQ8QO0eSs/maxresdefault.jpg",
     preview: "",
     video: "https://www.youtube.com/embed/OBKQ8QO0eSs",
     role: "Motion Design",
@@ -47,7 +56,7 @@ export const WORKS = [
     year: 2025,
     section: "2d3d",
     category: "brand",
-    thumb: "https://i.ytimg.com/vi/wwVkRFYXyiA/hqdefault.jpg",
+    thumb: "https://i.ytimg.com/vi/wwVkRFYXyiA/maxresdefault.jpg",
     preview: "",
     video: "https://www.youtube.com/embed/wwVkRFYXyiA",
     role: "Motion Design",
@@ -63,7 +72,7 @@ export const WORKS = [
     year: 2025,
     section: "2d3d",
     category: "brand",
-    thumb: "https://i.ytimg.com/vi/7gDAXcMfIiU/hqdefault.jpg",
+    thumb: "https://i.ytimg.com/vi/7gDAXcMfIiU/maxresdefault.jpg",
     preview: "",
     video: "https://www.youtube.com/embed/7gDAXcMfIiU",
     role: "Motion Design",
@@ -79,7 +88,7 @@ export const WORKS = [
     year: 2025,
     section: "2d3d",
     category: "ui",
-    thumb: "https://i.ytimg.com/vi/kW2J_zzFTdo/hqdefault.jpg",
+    thumb: "https://i.ytimg.com/vi/kW2J_zzFTdo/maxresdefault.jpg",
     preview: "",
     video: "https://www.youtube.com/embed/kW2J_zzFTdo",
     role: "UI Motion",
@@ -95,7 +104,7 @@ export const WORKS = [
     year: 2024,
     section: "2d3d",
     category: "title",
-    thumb: "https://i.ytimg.com/vi/t6xcrSCtTxc/hqdefault.jpg",
+    thumb: "https://i.ytimg.com/vi/t6xcrSCtTxc/maxresdefault.jpg",
     preview: "",
     video: "https://www.youtube.com/embed/t6xcrSCtTxc",
     role: "Motion Design, Typography",
@@ -111,7 +120,7 @@ export const WORKS = [
     year: 2024,
     section: "2d3d",
     category: "brand",
-    thumb: "https://i.ytimg.com/vi/hOClsWMop4Q/hqdefault.jpg",
+    thumb: "https://i.ytimg.com/vi/hOClsWMop4Q/maxresdefault.jpg",
     preview: "",
     video: "https://www.youtube.com/embed/hOClsWMop4Q",
     role: "Motion Design",
@@ -127,7 +136,7 @@ export const WORKS = [
     year: 2024,
     section: "2d3d",
     category: "brand",
-    thumb: "https://i.ytimg.com/vi/f1SwRQXyeow/hqdefault.jpg",
+    thumb: "https://i.ytimg.com/vi/f1SwRQXyeow/maxresdefault.jpg",
     preview: "",
     video: "https://www.youtube.com/embed/f1SwRQXyeow",
     role: "Motion Design",
@@ -143,7 +152,7 @@ export const WORKS = [
     year: 2024,
     section: "2d3d",
     category: "ui",
-    thumb: "https://i.ytimg.com/vi/-qfqtBzBV0g/hqdefault.jpg",
+    thumb: "https://i.ytimg.com/vi/-qfqtBzBV0g/maxresdefault.jpg",
     preview: "",
     video: "https://www.youtube.com/embed/-qfqtBzBV0g",
     role: "UI Motion",
@@ -159,7 +168,7 @@ export const WORKS = [
     year: 2023,
     section: "2d3d",
     category: "brand",
-    thumb: "https://i.ytimg.com/vi/rz1f0gtkNnM/hqdefault.jpg",
+    thumb: "https://i.ytimg.com/vi/rz1f0gtkNnM/maxresdefault.jpg",
     preview: "",
     video: "https://www.youtube.com/embed/rz1f0gtkNnM",
     role: "Motion Design",
@@ -175,7 +184,7 @@ export const WORKS = [
     year: 2023,
     section: "2d3d",
     category: "social",
-    thumb: "https://i.ytimg.com/vi/gXojT-bckO0/hqdefault.jpg",
+    thumb: "https://i.ytimg.com/vi/gXojT-bckO0/maxresdefault.jpg",
     preview: "",
     video: "https://www.youtube.com/embed/gXojT-bckO0",
     role: "Motion Design",
@@ -193,7 +202,7 @@ export const WORKS = [
     year: 2024,
     section: "ai",
     category: "ai",
-    thumb: "https://i.ytimg.com/vi/Vr4y8aVmrSQ/hqdefault.jpg",
+    thumb: "https://i.ytimg.com/vi/Vr4y8aVmrSQ/maxresdefault.jpg",
     preview: "",
     video: "https://www.youtube.com/embed/Vr4y8aVmrSQ",
     role: "AI 비주얼, Motion Design",
@@ -209,7 +218,7 @@ export const WORKS = [
     year: 2024,
     section: "ai",
     category: "ai",
-    thumb: "https://i.ytimg.com/vi/70fi-2PYXdY/hqdefault.jpg",
+    thumb: "https://i.ytimg.com/vi/70fi-2PYXdY/maxresdefault.jpg",
     preview: "",
     video: "https://www.youtube.com/embed/70fi-2PYXdY",
     role: "AI 비주얼, Motion Design",
@@ -225,7 +234,7 @@ export const WORKS = [
     year: 2023,
     section: "ai",
     category: "ai",
-    thumb: "https://i.vimeocdn.com/video/1684388319-b346b4c0ff690bb567975ec8fc55ea97c5aac5d49df454c4c39018ae409d6994-d_295x166",
+    thumb: "https://i.vimeocdn.com/video/1684388319-b346b4c0ff690bb567975ec8fc55ea97c5aac5d49df454c4c39018ae409d6994-d_1280x720",
     preview: "",
     video: "https://player.vimeo.com/video/836096644",
     role: "AI 비주얼, Motion Design",
