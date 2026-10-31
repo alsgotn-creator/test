@@ -985,6 +985,39 @@ body { animation: pageIn 0.5s var(--ease); }
   inset: 0;
   padding: 20px;
 }
+/* 호버 시 타일 안에서 재생되는 영상(유튜브/비메오 임베드) */
+.gallery__embed {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  animation: embed-in 0.45s ease forwards;
+  /* 클릭이 뒤의 타일(article)로 통과해야 모달이 열립니다 */
+  pointer-events: none;
+}
+@keyframes embed-in { to { opacity: 1; } }
+.gallery__embed iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 100%;
+  /* 16:9 영상을 4:5 타일에 object-fit:cover 처럼 꽉 채우기.
+     필요한 폭 = 100% x (16/9) / (4/5) = 222.22%  — 좌우가 잘려나갑니다.
+     .gallery__item 의 aspect-ratio(4/5)를 바꾸면 이 값도 같이 바꿔야 합니다. */
+  width: 222.23%;
+  /* 리셋의 `img, video, iframe { max-width: 100% }` 가 위 폭을 타일 폭으로 잘라버리므로
+     여기서만 풀어줍니다. 안 풀면 영상이 상하로 레터박스 처리돼 보입니다. */
+  max-width: none;
+  border: 0;
+  pointer-events: none;
+}
+/* 영상이 도는 동안엔 흑백/회색 베일을 걷어냅니다 — 안 그러면 영상이 안 보입니다.
+   캡션은 계속 읽혀야 하므로 아주 옅은 어둠만 남깁니다. */
+.gallery__item.is-playing::after { background: rgba(0, 0, 0, 0.18); }
+.gallery__item.is-playing:hover img,
+.gallery__item.is-playing:hover video { filter: none; }
+
 /* 호버 시 회색 오버레이 + 흑백 처리 */
 .gallery__item::after {
   content: "";
@@ -1019,5 +1052,6 @@ body { animation: pageIn 0.5s var(--ease); }
 }
 @media (prefers-reduced-motion: reduce) {
   .gallery__item img, .gallery__item video, .gallery__item::after, .gallery__caption { transition: none; }
+  .gallery__embed { display: none; }
 }
 

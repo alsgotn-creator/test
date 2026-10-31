@@ -21,6 +21,39 @@ function Placeholder({ work }) {
   );
 }
 
+// 타일에 마우스를 올리고 이만큼 머물러야 영상을 띄웁니다. 그냥 스쳐 지나갈 때마다
+// iframe을 만들면 낭비라서 짧게 지연을 둡니다.
+const HOVER_DELAY = 350;
+
+/**
+ * 호버했을 때 타일 안에서 재생할 영상 주소를 만듭니다.
+ * data/works.js의 video가 유튜브/비메오 임베드면 소리 없이 자동재생 + 반복으로
+ * 바꿔서 돌려주고, 그 외(빈 값 등)는 null — 이 경우 호버해도 썸네일 그대로입니다.
+ *
+ * 유튜브는 loop=1 만으로는 반복되지 않고 playlist에 같은 ID를 줘야 합니다.
+ * controls=0으로 컨트롤 바를 숨겨 타일이 지저분해지지 않게 했습니다.
+ */
+function hoverEmbedSrc(video) {
+  if (!video) return null;
+
+  const yt = video.match(/youtube\.com\/embed\/([\w-]+)/);
+  if (yt) {
+    const id = yt[1];
+    return (
+      `https://www.youtube.com/embed/${id}` +
+      `?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&modestbranding=1&rel=0&playsinline=1`
+    );
+  }
+
+  const vimeo = video.match(/player\.vimeo\.com\/video\/(\d+)/);
+  if (vimeo) {
+    // background=1 이면 컨트롤/제목 없이 무음 자동재생으로 돕니다.
+    return `https://player.vimeo.com/video/${vimeo[1]}?autoplay=1&muted=1&loop=1&background=1`;
+  }
+
+  return null;
+}
+
 // 홈 대표 갤러리가 채우려는 타일 수 — 4단 x 2행. 썸네일 있는 작품이 이보다
 // 적으면 가능한 만큼(짝수)만 씁니다.
 const FEATURED_TARGET = 8;
@@ -58,6 +91,9 @@ function buildFeaturedList(works) {
 export default function Gallery({ galleryKey }) {
   const gridRef = useRef(null);
   const [openId, setOpenId] = useState(null);
+  // 지금 호버해서 영상이 돌고 있는 타일. 한 번에 하나만 띄웁니다.
+  const [playingId, setPlayingId] = useState(null);
+  const hoverTimer = useRef(null);
 
   const list =
     galleryKey === "featured"
@@ -93,17 +129,27 @@ export default function Gallery({ galleryKey }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [galleryKey, list.length]);
 
+  // 타일을 빠르게 스쳐 지나가다 페이지를 벗어나면 예약된 타이머가 남을 수 있어 정리합니다.
+  useEffect(() => () => clearTimeout(hoverTimer.current), []);
+
   if (!list.length) return null;
 
   const reduceMotion = () =>
     typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const handleEnter = (e) => {
+  const handleEnter = (e, w) => {
     const v = e.currentTarget.querySelector("video");
     if (v) v.play().catch(() => {});
     if (!reduceMotion()) {
       const media = e.currentTarget.querySelectorAll("img, video, .work-card__placeholder");
       gsap.to(media, { scale: 1.05, duration: 0.6, ease: "power3.out" });
+    }
+
+    // preview용 mp4가 따로 있으면 그게 우선입니다(위에서 이미 재생). 없을 때만
+    // 유튜브/비메오 임베드를 띄웁니다. 모션을 줄이는 설정이면 띄우지 않습니다.
+    if (!w.preview && !reduceMotion() && hoverEmbedSrc(w.video)) {
+      clearTimeout(hoverTimer.current);
+      hoverTimer.current = setTimeout(() => setPlayingId(w.id), HOVER_DELAY);
     }
   };
 
@@ -115,6 +161,16 @@ export default function Gallery({ galleryKey }) {
     }
     const media = e.currentTarget.querySelectorAll("img, video, .work-card__placeholder");
     gsap.to(media, { scale: 1, duration: 0.6, ease: "power3.out" });
+
+    clearTimeout(hoverTimer.current);
+    setPlayingId(null);
+  };
+
+  // 타일을 눌러 모달이 열리면 뒤에서 영상이 겹쳐 돌지 않도록 멈춥니다.
+  const openModal = (id) => {
+    clearTimeout(hoverTimer.current);
+    setPlayingId(null);
+    setOpenId(id);
   };
 
   const openWork = list.find((w) => w.id === openId) || null;
@@ -125,22 +181,32 @@ export default function Gallery({ galleryKey }) {
         {list.map((w) => (
           <article
             key={w.id}
-            className="gallery__item"
+            className={`gallery__item${playingId === w.id ? " is-playing" : ""}`}
             tabIndex={0}
             role="button"
             aria-label={`${w.title} 영상 보기`}
-            onMouseEnter={handleEnter}
+            onMouseEnter={(e) => handleEnter(e, w)}
             onMouseLeave={handleLeave}
-            onClick={() => setOpenId(w.id)}
+            onClick={() => openModal(w.id)}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
-                setOpenId(w.id);
+                openModal(w.id);
               }
             }}
           >
             {w.thumb ? <WorkThumb work={w} sizes={thumbSizes} /> : <Placeholder work={w} />}
             {w.preview ? <video src={w.preview} muted loop playsInline preload="none" /> : null}
+            {playingId === w.id && hoverEmbedSrc(w.video) ? (
+              <div className="gallery__embed" aria-hidden="true">
+                <iframe
+                  src={hoverEmbedSrc(w.video)}
+                  title={w.title}
+                  allow="autoplay; encrypted-media"
+                  tabIndex={-1}
+                />
+              </div>
+            ) : null}
             <div className="gallery__caption">
               <p className="gallery__title">{w.title}</p>
               <p className="gallery__year">{w.year}</p>
