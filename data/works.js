@@ -206,7 +206,7 @@ export const WORKS = [
     preview: "",
     video: "https://www.youtube.com/embed/MmzyrpD0IqU",
     role: "Motion Design",
-    tools: ["After Effects"],
+    tools: ["After Effects", "Higgsfield", "Claude Code"],
     desc: "OurShot 프로모션 영상. SPUR 제작.",
     featured: true,
     color: ["#7c3aed", "#c4b5fd"],
