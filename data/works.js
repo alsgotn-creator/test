@@ -196,6 +196,22 @@ export const WORKS = [
 
   // ---------- AI ----------
   {
+    id: "ourshot-promotion",
+    title: "OurShot Promotion",
+    client: "SPUR",
+    year: 2026,
+    section: "ai",
+    category: "ai",
+    thumb: "https://i.ytimg.com/vi/MmzyrpD0IqU/maxresdefault.jpg",
+    preview: "",
+    video: "https://www.youtube.com/embed/MmzyrpD0IqU",
+    role: "Motion Design",
+    tools: ["After Effects"],
+    desc: "OurShot 프로모션 영상.",
+    featured: true,
+    color: ["#7c3aed", "#c4b5fd"],
+  },
+  {
     id: "colpop-final",
     title: "콜팝 최종",
     client: "콜팝",

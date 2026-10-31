@@ -18,27 +18,36 @@ import Image from "next/image";
           없으면 브라우저가 "화면 전체 폭"으로 가정해서 필요 이상으로 큰 파일을
           받아옵니다. 그래서 갤러리가 컬럼 수를 계산해 넘겨줍니다.
 
-   onError: 유튜브 maxresdefault.jpg(1280×720)는 원본이 HD로 업로드된 영상에만
-            있습니다. SD로 올라간 옛 영상엔 없어서 404가 나는데, 그때 깨진 이미지가
-            보이지 않도록 hqdefault.jpg(480×360)로 한 번 되돌립니다.
-            → data/works.js 에는 항상 maxresdefault 주소를 적어두면 됩니다.
+   onError(해상도 폴백): 유튜브는 원본이 HD로 올라간 영상에만 maxresdefault(1280×720)를
+          만들어 둡니다. SD 업로드거나, 방금 올려서 아직 처리 중이면 404가 납니다.
+          그때 깨진 이미지 대신 아래로 한 칸씩 내려갑니다:
+
+              maxresdefault(1280×720) → sddefault(640×480) → hqdefault(480×360)
+
+          data/works.js 에는 항상 maxresdefault 주소를 적어두면 됩니다. 나중에
+          유튜브가 HD 썸네일을 만들어내면, 다음 방문부터 저절로 제일 위 칸이
+          성공하므로 따로 고칠 필요가 없습니다.
    ========================================================= */
 
-// "…/maxresdefault.jpg" → "…/hqdefault.jpg" (유튜브 썸네일일 때만)
-function fallbackOf(src) {
-  return src.includes("/maxresdefault.jpg")
-    ? src.replace("/maxresdefault.jpg", "/hqdefault.jpg")
-    : null;
+// 유튜브 썸네일이면 해상도 높은 순으로 후보를 만들고, 아니면 원본 주소 하나만.
+function candidatesOf(src) {
+  if (!src.includes("/maxresdefault.jpg")) return [src];
+  return [
+    src,
+    src.replace("/maxresdefault.jpg", "/sddefault.jpg"),
+    src.replace("/maxresdefault.jpg", "/hqdefault.jpg"),
+  ];
 }
 
 export default function WorkThumb({ work, sizes, priority = false }) {
-  // 현재 src를 state에 담지 않고 "실패한 주소"만 기억합니다. 이렇게 하면
-  // work.thumb이 다른 작품으로 바뀔 때(모달 재사용 등) 비교값이 저절로 어긋나
-  // 고해상도부터 다시 시도하게 되고, effect로 state를 되돌릴 필요가 없습니다.
-  const [failedSrc, setFailedSrc] = useState(null);
+  // 현재 src를 state에 담지 않고 "어느 썸네일에서 몇 번 실패했는지"만 기억합니다.
+  // 이렇게 하면 work.thumb이 다른 작품으로 바뀔 때(모달 재사용 등) thumb 비교가
+  // 어긋나 step이 저절로 0으로 돌아가고, effect로 state를 되돌릴 필요가 없습니다.
+  const [failed, setFailed] = useState({ thumb: null, step: 0 });
 
-  const fallback = fallbackOf(work.thumb);
-  const src = failedSrc === work.thumb && fallback ? fallback : work.thumb;
+  const chain = candidatesOf(work.thumb);
+  const step = failed.thumb === work.thumb ? failed.step : 0;
+  const src = chain[Math.min(step, chain.length - 1)];
 
   return (
     <Image
@@ -47,7 +56,10 @@ export default function WorkThumb({ work, sizes, priority = false }) {
       fill
       sizes={sizes}
       priority={priority}
-      onError={() => setFailedSrc(work.thumb)}
+      onError={() => {
+        // 마지막 후보까지 실패하면 더 내려갈 곳이 없으므로 그대로 둡니다.
+        if (step < chain.length - 1) setFailed({ thumb: work.thumb, step: step + 1 });
+      }}
     />
   );
 }
