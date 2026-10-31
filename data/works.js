@@ -198,7 +198,7 @@ export const WORKS = [
   {
     id: "ourshot-promotion",
     title: "OurShot Promotion",
-    client: "SPUR",
+    client: "OurShot",
     year: 2026,
     section: "ai",
     category: "ai",
@@ -207,7 +207,7 @@ export const WORKS = [
     video: "https://www.youtube.com/embed/MmzyrpD0IqU",
     role: "Motion Design",
     tools: ["After Effects"],
-    desc: "OurShot 프로모션 영상.",
+    desc: "OurShot 프로모션 영상. SPUR 제작.",
     featured: true,
     color: ["#7c3aed", "#c4b5fd"],
   },
