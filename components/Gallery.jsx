@@ -21,10 +21,38 @@ function Placeholder({ work }) {
   );
 }
 
+// 홈 대표 갤러리가 채우려는 타일 수 — 4단 x 2행. 썸네일 있는 작품이 이보다
+// 적으면 가능한 만큼(짝수)만 씁니다.
+const FEATURED_TARGET = 8;
+
+/**
+ * 홈 대표 갤러리에 보여줄 목록을 만듭니다.
+ *
+ * 그리드가 "세로 2단"이라 아이템이 홀수면 마지막 칸이 비고, 썸네일이 없는 작품은
+ * 회색 그라디언트로 떠서 역시 빈칸처럼 보입니다. 그래서 두 가지를 모두 막습니다.
+ *   1) 썸네일이 있는 작품만 후보로 삼고
+ *   2) featured 작품을 먼저 넣은 뒤, 칸이 남으면 나머지 작품으로 채워
+ *      항상 짝수 개(= 빈칸 없는 2행)가 되게 합니다.
+ *
+ * 덕분에 data/works.js에 썸네일 없는 플레이스홀더가 섞여 있어도 홈은 늘 꽉 찹니다.
+ */
+function buildFeaturedList(works) {
+  const pool = works.filter((w) => w.thumb);
+  const picked = pool.filter((w) => w.featured);
+  const rest = pool.filter((w) => !w.featured);
+
+  // 후보가 모자라면 그만큼만, 어느 쪽이든 짝수로 맞춥니다(~1 = 홀수면 1 내림).
+  const target = Math.min(FEATURED_TARGET, pool.length) & ~1;
+
+  const list = picked.slice(0, target);
+  while (list.length < target && rest.length) list.push(rest.shift());
+  return list;
+}
+
 /**
  * 풀블리드 갤러리 — galleryKey에 따라 WORKS를 필터링해서 보여줍니다.
  *   "2d3d" | "ai" | "branding" → 해당 section 작품만
- *   "featured"           → featured:true 인 작품만 (Home 대표 작품)
+ *   "featured"           → 홈 대표 작품 (buildFeaturedList 참고)
  * "세로 2단" 레이아웃: 컬럼 수 = 아이템 개수 ÷ 2 (올림) → 항상 정확히 2행.
  */
 export default function Gallery({ galleryKey }) {
@@ -33,7 +61,7 @@ export default function Gallery({ galleryKey }) {
 
   const list =
     galleryKey === "featured"
-      ? WORKS.filter((w) => w.featured)
+      ? buildFeaturedList(WORKS)
       : WORKS.filter((w) => w.section === galleryKey);
   const cols = Math.max(1, Math.ceil(list.length / 2));
 
